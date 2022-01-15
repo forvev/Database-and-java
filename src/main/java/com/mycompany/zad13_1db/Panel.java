@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
 import javax.swing.*;
 
 public class Panel extends JPanel{
@@ -86,12 +88,11 @@ public class Panel extends JPanel{
         @Override
         public void actionPerformed(ActionEvent e) {
             if(method==1){
-                message.setText("xx");
-                add_students();
+                add_students(1);
                 
             }
             else if(method==2){
-                
+                add_students(2);
             }
             else if(method==3){
                 
@@ -100,7 +101,7 @@ public class Panel extends JPanel{
         
     }
     
-    private void add_students(){
+    private void add_students(int method){
         add_studentsPanel = new JPanel(new GridBagLayout());
         
         e1 = new JLabel("Name:");
@@ -124,7 +125,8 @@ public class Panel extends JPanel{
         add_studentsPanel.add(textLastname,c);
         
         confirm_students = new JButton("OK");
-        confirm_students.addActionListener(new ListenerDB());
+        if(method==1) confirm_students.addActionListener(new ListenerDB(1));
+        else if(method==2) confirm_students.addActionListener(new ListenerDB(2));
         c.gridx=1;
         c.gridy=2;
         add_studentsPanel.add(confirm_students,c);
@@ -137,10 +139,57 @@ public class Panel extends JPanel{
     }
     
     private class ListenerDB implements ActionListener{//dodajemy do BD
-
+        int method;
+        
+        ListenerDB(int i){
+            method=i;
+        }
         @Override
         public void actionPerformed(ActionEvent e) {
-            String lastname_p= textLastname.getText();
+            if(method==1) readStudents_method();
+            else if(method==2){
+                List<Student> wyjscie = new LinkedList<Student>();
+                wyjscie = pobierzDane("Studenci");
+                
+                for(Student s: wyjscie){
+                    message.setText(s.getImie()+" "+s.getNazwisko()+", id:"+s.getId()+"\n");
+                }
+            }
+        }
+        
+    }
+    public List<Student> pobierzDane(String tabela) {
+        
+        String name= textName.getText();
+        String lastname = textLastname.getText();
+                
+        java.util.List<Student> wyjscie = new LinkedList<Student>();
+        try{
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM "+tabela+" WHERE nazwisko=\'"
+                    + lastname+"\' AND imie=\'"+name+"\'");
+            
+
+            int id;
+            String db_name, db_lastname;
+            
+            while(resultSet.next()){
+                id=resultSet.getInt("id");
+                db_lastname = resultSet.getString("nazwisko");
+                db_name = resultSet.getString("imie");
+                wyjscie.add(new Student(id, db_lastname, db_name));
+            }
+            
+        }catch(SQLException e){
+            System.err.println("Problem z wczytaniem danych z BD");
+            e.printStackTrace();
+            return null;
+        }
+        
+        return wyjscie;
+    }
+    
+    public void readStudents_method(){
+        String lastname_p= textLastname.getText();
             String name_p = textName.getText();
             try {
             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO " + "Studenci" + " VALUES(null,?,?)");
@@ -151,8 +200,6 @@ public class Panel extends JPanel{
             System.err.println("Błąd przy wprowadzaniu danych studenta: " + lastname_p + " " + name_p);
             exp.printStackTrace();
          }
-        }
-        
     }
     
     public void dataBase(){
