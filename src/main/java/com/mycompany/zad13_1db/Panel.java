@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.*;
@@ -125,13 +126,14 @@ public class Panel extends JPanel{
         add_studentsPanel.add(textLastname,c);
         
         confirm_students = new JButton("OK");
-        if(method==1) confirm_students.addActionListener(new ListenerDB(1));
+        if(method==1){
+            confirm_students.addActionListener(new ListenerDB(1));
+        }
         else if(method==2) confirm_students.addActionListener(new ListenerDB(2));
         c.gridx=1;
         c.gridy=2;
         add_studentsPanel.add(confirm_students,c);
-        
-        System.out.println("siema");
+
         this.add(add_studentsPanel, BorderLayout.CENTER);
         this.validate(); //po nacisnieciu przycisku ukaza nam sie pola do wpisania
         
@@ -142,8 +144,14 @@ public class Panel extends JPanel{
         int method;
         
         ListenerDB(int i){
+            System.out.println("czyszcze");
+            textName.setText(null);
+            textLastname.setText(null);
+            //textName.requestFocus();
+            //textLastname.requestFocus();
             method=i;
         }
+        
         @Override
         public void actionPerformed(ActionEvent e) {
             if(method==1) readStudents_method();
@@ -152,7 +160,8 @@ public class Panel extends JPanel{
                 wyjscie = pobierzDane("Studenci");
                 
                 for(Student s: wyjscie){
-                    message.setText(s.getImie()+" "+s.getNazwisko()+", id:"+s.getId()+"\n");
+                    message.append(s.getImie()+" "+s.getNazwisko()+", id:"+s.getId()+"\n");
+                    
                 }
             }
         }

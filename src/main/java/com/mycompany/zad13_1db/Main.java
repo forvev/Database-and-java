@@ -21,7 +21,7 @@ import javax.swing.JPanel;
             
             
             
-            frame.setPreferredSize(new Dimension(600,500));
+            frame.setPreferredSize(new Dimension(500,400));
             frame.pack();
             frame.setVisible(true);
             
