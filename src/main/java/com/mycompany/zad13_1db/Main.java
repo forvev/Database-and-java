@@ -14,7 +14,7 @@ import javax.swing.JPanel;
             
             BazaDanych bazaDanych = new BazaDanych();
 
-            JFrame frame = new JFrame("Baza danych");
+            JFrame frame = new JFrame("Data base");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             //Panel panel1 = new Panel();
             frame.getContentPane().add(new Panel());

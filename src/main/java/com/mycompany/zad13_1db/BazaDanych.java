@@ -76,7 +76,7 @@ public class BazaDanych {
             
             
         }catch(SQLException e){
-            System.err.println("Błąd przy wprowadzaniu danych studenta: " + nazwisko + " " + imie);
+            System.err.println("Bład przy wprowadzaniu danych studenta: " + nazwisko + " " + imie);
             e.printStackTrace();
         }
     }
@@ -88,7 +88,7 @@ public class BazaDanych {
             preparedStatement.setString(2, imie);
             preparedStatement.execute();
          } catch (SQLException e) {
-            System.err.println("Błąd przy wprowadzaniu danych studenta: " + nazwisko + " " + imie);
+            System.err.println("Bład przy wprowadzaniu danych studenta: " + nazwisko + " " + imie);
             e.printStackTrace();
             return false;
          }
@@ -150,7 +150,7 @@ public class BazaDanych {
         try {
             connection.close();
         } catch (SQLException e) {
-            System.err.println("Problem z zamknięciem połączenia");
+            System.err.println("Problem z zamknieciem połączenia");
             e.printStackTrace();
         }
     }
