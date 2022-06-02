@@ -25,9 +25,12 @@ public class Panel extends JPanel{
     private JTextField textName, textLastname;
     private int counter_modify;
     private JCheckBox cb1;
-    private ListenerDB listener_1, listener_2;
+    private ListenerDB listener_1, listener_2, listener_3, listener_4; //add,read,delete, modify
+    private String name_before, surname_before;
     
     Panel(){
+         name_before = new String();
+         surname_before = new String();
          counter_modify=0;
          
          add_new_students = new JButton("Add new student");
@@ -185,6 +188,7 @@ public class Panel extends JPanel{
                     read_students.setBackground(null);
                     modify_students.setBackground(null);  
                     confirm_students.removeActionListener(listener_2);
+                    confirm_students.removeActionListener(listener_1);
                     add_students(1);
 
                 }
@@ -192,7 +196,9 @@ public class Panel extends JPanel{
                     read_students.setBackground(Color.GREEN);
                     add_new_students.setBackground(null);
                     modify_students.setBackground(null);
+                    //to avoid double listeners
                     confirm_students.removeActionListener(listener_1);
+                    confirm_students.removeActionListener(listener_2);
                     add_students(2);
                 }
             }
@@ -204,6 +210,8 @@ public class Panel extends JPanel{
                 jb_modify.setVisible(true);
                 confirm_students.setVisible(false);
                 info_modify.setVisible(false);
+                jb_delete.removeActionListener(listener_3);
+                jb_modify.removeActionListener(listener_4);
                 add_students(3);
             }
         }
@@ -222,67 +230,17 @@ public class Panel extends JPanel{
             confirm_students.addActionListener(listener_2);
              
         }
-        else if(method==3){       
-            jb_delete.addActionListener(g -> {
+        else if(method==3){
+            listener_3 = new ListenerDB(3);
+            jb_delete.addActionListener(listener_3);
+            //jb_delete.addActionListener(g -> {
+ 
+            //});
+            listener_4 = new ListenerDB(4);
+            jb_modify.addActionListener(listener_4);
+            //jb_modify.addActionListener(l->{
                 
-                if(!textLastname.getText().isEmpty() || !textName.getText().isEmpty()){
-                    System.out.println("nie wiem");
-                    String lastname_p= textLastname.getText();
-                    String name_p = textName.getText();
-                    try{
-                        PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM " + "Studenci" + " WHERE nazwisko=? and imie=?");
-                        preparedStatement.setString(1, lastname_p);
-                        preparedStatement.setString(2, name_p);
-                        preparedStatement.execute();
-                        //preparedStatement.close();
-
-                    }catch(SQLException e){
-                        System.err.println("Error during providing a user data: " + lastname_p + " " + name_p);
-                        e.printStackTrace();
-                    }
-                }
-                else{
-                    System.out.println("no jak");
-                    
-                    message.append("Provide some value!\n");
-                }
-            });
-            
-            jb_modify.addActionListener(l->{
-                counter_modify++;
-                String name_before = new String(), surname_before = new String();
-                
-                if((counter_modify!=2)){
-                    System.out.println("Zmieniam1");
-                    name_before = textName.getText();
-                    surname_before = textLastname.getText();
-                    textLastname.setText("");
-                    textName.setText("");
-                    info_modify.setVisible(true);
-                }
-                else{
-                    System.out.println("Zmieniam2");
-                    counter_modify=0;
-                    info_modify.setVisible(false);
-                    String lastname_p= textLastname.getText();
-                    textLastname.setText("");
-                    String name_p = textName.getText();
-                    textName.setText("");
-                    
-                    try{
-                    PreparedStatement preparedStatement = connection.prepareStatement("UPDATE " + "Studenci" + " SET nazwisko=?, imie=? WHERE nazwisko=? and imie=?");
-                    preparedStatement.setString(1, lastname_p);
-                    preparedStatement.setString(2, name_p);
-                    preparedStatement.setString(3, surname_before);
-                    preparedStatement.setString(4, name_before);
-                    preparedStatement.execute();
-
-                }catch(SQLException e){
-                    System.err.println("Error during data's transmission: " + lastname_p + " " + name_p);
-                    e.printStackTrace();
-                }
-            }
-            });          
+           // });          
         }       
    }
     
@@ -310,6 +268,71 @@ public class Panel extends JPanel{
                 }
                 System.out.println("czemu tu jestem");
                 if(wyjscie.isEmpty()) message.append("There is no such a user!!\n");
+            }
+            else if(method==3){
+                if(!textLastname.getText().isEmpty() || !textName.getText().isEmpty()){
+                    System.out.println("nie wiem");
+                    String lastname_p= textLastname.getText();
+                    String name_p = textName.getText();
+                    try{
+                        PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM " + "Studenci" + " WHERE nazwisko=? and imie=?");
+                        preparedStatement.setString(1, lastname_p);
+                        preparedStatement.setString(2, name_p);
+                        preparedStatement.execute();
+                        //preparedStatement.close();
+
+                    }catch(SQLException ee){
+                        System.err.println("Error during providing a user data: " + lastname_p + " " + name_p);
+                        ee.printStackTrace();
+                    }
+                }
+                else{
+                    System.out.println("no jak");
+                    
+                    message.append("Provide some value!\n");
+                }
+            }
+            
+            else if(method==4){
+                counter_modify++;
+                System.out.println("ok, zacznam");
+                if((counter_modify!=2)){
+                    System.out.println("Zmieniam1");
+                    name_before = textName.getText();
+                    surname_before = textLastname.getText();
+                    textLastname.setText("");
+                    textName.setText("");
+                    info_modify.setVisible(true);
+                    System.out.println("pobrałem:"+ name_before + surname_before);
+                }
+                else{
+                    System.out.println("Zmieniam2");
+                    counter_modify=0;
+                    info_modify.setVisible(false);
+                    String lastname_p= textLastname.getText();
+                    textLastname.setText("");
+                    String name_p = textName.getText();
+                    textName.setText("");
+                    
+                    System.out.println("a teraz :"+ lastname_p + name_p);
+                    
+                    try{
+                    PreparedStatement preparedStatement = connection.prepareStatement("UPDATE " + "Studenci" + " SET nazwisko=?, imie=? WHERE nazwisko=? and imie=?");
+                        System.out.println(lastname_p);
+                    preparedStatement.setString(1, lastname_p);
+                    System.out.println(name_p);
+                    preparedStatement.setString(2, name_p);
+                    System.out.println(surname_before);
+                    preparedStatement.setString(3, surname_before);
+                    System.out.println(name_before);
+                    preparedStatement.setString(4, name_before);
+                    preparedStatement.execute();
+
+                }catch(SQLException g){
+                    System.err.println("Error during data's transmission: " + lastname_p + " " + name_p);
+                    g.printStackTrace();
+                }
+            }
             }
         }
         
