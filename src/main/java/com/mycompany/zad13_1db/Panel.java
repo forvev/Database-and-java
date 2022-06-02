@@ -18,16 +18,18 @@ public class Panel extends JPanel{
     private Statement statement;
     private JTextArea message;
     private JButton add_new_students, read_students, modify_students, confirm_students, jb_delete, jb_modify;
-    private JPanel panel_button, textArea, add_studentsPanel;
+    private JPanel panel_button, textArea, add_studentsPanel, lable_add, final_panel;
     private GridBagConstraints c;
     private JScrollPane przewijanie;
-    private JLabel e1,e2;
+    private JLabel e1,e2,info_modify;
     private JTextField textName, textLastname;
+    private int counter_modify;
     private JCheckBox cb1;
+    private ListenerDB listener_1, listener_2;
     
     Panel(){
-         //setBackground(Color.LIGHT_GRAY);
-        
+         counter_modify=0;
+         
          add_new_students = new JButton("Add new student");
          add_new_students.addActionListener(new Listener(1));
          read_students = new JButton("Read the given student");
@@ -38,6 +40,7 @@ public class Panel extends JPanel{
          add_studentsPanel = new JPanel(new GridBagLayout());
          jb_delete = new JButton("Delete");
          confirm_students = new JButton("OK");
+         jb_modify = new JButton("Modify");
          
          
          cb1 = new JCheckBox("Clear");
@@ -47,6 +50,7 @@ public class Panel extends JPanel{
          
          textArea = new JPanel(new GridBagLayout());
          this.setLayout(new BorderLayout());
+         
          c = new GridBagConstraints();
          
          message = new JTextArea(10,20);
@@ -61,12 +65,69 @@ public class Panel extends JPanel{
          
          przewijanie.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
          przewijanie.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-         
-         setWindow();
+             
+         setWindow_left();
+         setWindow_right();
          dataBase();
     }
     
-    public void setWindow(){
+    public void setWindow_right(){
+        lable_add = new JPanel();
+        info_modify = new JLabel("Now, provide the new data and click modify!");
+        
+        lable_add.add(info_modify);
+        
+        e1 = new JLabel("Name:");
+        c.gridx=0;
+        c.gridy=0;         
+        add_studentsPanel.add(e1,c);
+         
+        e2 = new JLabel("Lastname:");       
+        c.gridx=0;
+        c.gridy=1;     
+        add_studentsPanel.add(e2,c);
+        
+        textName = new JTextField(10);
+        c.gridx=1;
+        c.gridy=0;
+        add_studentsPanel.add(textName,c);
+        
+        textLastname = new JTextField(10);
+        c.gridx=1;
+        c.gridy=1;
+        add_studentsPanel.add(textLastname,c);
+        
+        c.gridx=1;
+        c.gridy=2;
+        add_studentsPanel.add(confirm_students,c);
+        
+        c.gridx=0;
+        c.gridy=2;
+        add_studentsPanel.add(jb_delete,c);
+        c.gridx=1;
+        c.gridy=2;
+        add_studentsPanel.add(jb_modify,c);
+        
+        final_panel = new JPanel( new BorderLayout());     
+        
+        final_panel.add(add_studentsPanel,BorderLayout.CENTER);
+        final_panel.add(lable_add, BorderLayout.NORTH);
+        
+        this.add(final_panel, BorderLayout.CENTER);
+        this.validate(); //po nacisnieciu przycisku ukaza nam sie pola do wpisania
+        
+        
+        e1.setVisible(false); e2.setVisible(false); 
+        textName.setVisible(false);
+        textLastname.setVisible(false);
+        confirm_students.setVisible(false);
+        jb_delete.setVisible(false);
+        jb_modify.setVisible(false);
+        info_modify.setVisible(false);
+        
+    }
+
+    public void setWindow_left(){ //left side
         
         
         c.gridx=0;
@@ -93,13 +154,12 @@ public class Panel extends JPanel{
          
         panel_button.add(modify_students, c);
          
+        
         this.add(textArea, BorderLayout.WEST);
-         
         this.add(panel_button, BorderLayout.NORTH);
     }
     
-    private class Listener implements ActionListener{
-        
+    private class Listener implements ActionListener{  
         int method;
         
         Listener(int i){
@@ -108,28 +168,42 @@ public class Panel extends JPanel{
         
         @Override
         public void actionPerformed(ActionEvent e) {
-            if(method==1){
-                
-                add_new_students.setBackground(Color.GREEN);
-                read_students.setBackground(null);
-                modify_students.setBackground(null);
-                
-                add_students(1);
-                
+            e1.setVisible(true); e2.setVisible(true); 
+            textName.setVisible(true);
+            textLastname.setVisible(true);
+            textName.setVisible(true);
+            info_modify.setVisible(false);
+            
+            textName.setText("");
+            textLastname.setText("");
+            if (method!=3){
+                jb_delete.setVisible(false);
+                jb_modify.setVisible(false);
+                confirm_students.setVisible(true);
+                if(method==1){
+                    add_new_students.setBackground(Color.GREEN);
+                    read_students.setBackground(null);
+                    modify_students.setBackground(null);  
+                    confirm_students.removeActionListener(listener_2);
+                    add_students(1);
+
+                }
+                else {  
+                    read_students.setBackground(Color.GREEN);
+                    add_new_students.setBackground(null);
+                    modify_students.setBackground(null);
+                    confirm_students.removeActionListener(listener_1);
+                    add_students(2);
+                }
             }
-            else if(method==2){
-                
-                read_students.setBackground(Color.GREEN);
-                add_new_students.setBackground(null);
-                modify_students.setBackground(null);
-                add_students(2);
-            }
-            else if(method==3){
-                
+            else{
                 modify_students.setBackground(Color.GREEN);
                 add_new_students.setBackground(null);
                 read_students.setBackground(null);
-
+                jb_delete.setVisible(true);
+                jb_modify.setVisible(true);
+                confirm_students.setVisible(false);
+                info_modify.setVisible(false);
                 add_students(3);
             }
         }
@@ -137,117 +211,109 @@ public class Panel extends JPanel{
     }
     
     private void add_students(int method){ 
-        
-        e1 = new JLabel("Name:");
-        c.gridx=0;
-        c.gridy=0;         
-        add_studentsPanel.add(e1,c);
          
-        e2 = new JLabel("Lastname:");       
-        c.gridx=0;
-        c.gridy=1;     
-        add_studentsPanel.add(e2,c);
         
-        textName = new JTextField(10);
-        c.gridx=1;
-        c.gridy=0;
-        add_studentsPanel.add(textName,c);
-        
-        textLastname = new JTextField(10);
-        c.gridx=1;
-        c.gridy=1;
-        add_studentsPanel.add(textLastname,c);
-        
-        
-        
-        if(method==1 || method ==2){
-            jb_delete.setVisible(false);
-            confirm_students.setText("Ok");
-            if(method==1) confirm_students.addActionListener(new ListenerDB(1));
-            else if(method==2)confirm_students.addActionListener(new ListenerDB(2));
-            c.gridx=1;
-            c.gridy=2;
-            add_studentsPanel.add(confirm_students,c);
-
+        if(method==1){
+            listener_1 = new ListenerDB(1);
+            confirm_students.addActionListener(listener_1);
         }
-        else if(method==3){
-            jb_delete.setVisible(true);
-            
+        else if(method==2){
+            listener_2 = new ListenerDB(2);
+            confirm_students.addActionListener(listener_2);
+             
+        }
+        else if(method==3){       
             jb_delete.addActionListener(g -> {
-                String lastname_p= textLastname.getText();
-                String name_p = textName.getText();
-                try{
-                    PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM " + "Studenci" + " WHERE nazwisko=? and imie=?");
-                    preparedStatement.setString(1, lastname_p);
-                    preparedStatement.setString(2, name_p);
-                    preparedStatement.execute();
+                
+                if(!textLastname.getText().isEmpty() || !textName.getText().isEmpty()){
+                    System.out.println("nie wiem");
+                    String lastname_p= textLastname.getText();
+                    String name_p = textName.getText();
+                    try{
+                        PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM " + "Studenci" + " WHERE nazwisko=? and imie=?");
+                        preparedStatement.setString(1, lastname_p);
+                        preparedStatement.setString(2, name_p);
+                        preparedStatement.execute();
+                        //preparedStatement.close();
 
-                }catch(SQLException e){
-                    System.err.println("Błąd przy wprowadzaniu danych studenta: " + lastname_p + " " + name_p);
-                    e.printStackTrace();
+                    }catch(SQLException e){
+                        System.err.println("Error during providing a user data: " + lastname_p + " " + name_p);
+                        e.printStackTrace();
+                    }
+                }
+                else{
+                    System.out.println("no jak");
+                    
+                    message.append("Provide some value!\n");
                 }
             });
-            c.gridx=0;
-            c.gridy=2;
-            add_studentsPanel.add(jb_delete,c);
             
-            jb_modify = new JButton("Modify");
-            /*jb_modify.addActionListener(l->{
-                String lastname_p= textLastname.getText();
-                textLastname.setText("");
-                String name_p = textName.getText();
-                textName.setText("");
-                try{
-                    PreparedStatement preparedStatement = connection.prepareStatement("UPDATE " + "Studenci" + " SET nazwisko=? and imie=? WHERE nazwisko=? and imie=?");
-                    preparedStatement.setString(1, new_n);
-                    preparedStatement.setString(2, nazwisko);
-                    preparedStatement.setString(3, imie);
+            jb_modify.addActionListener(l->{
+                counter_modify++;
+                String name_before = new String(), surname_before = new String();
+                
+                if((counter_modify!=2)){
+                    System.out.println("Zmieniam1");
+                    name_before = textName.getText();
+                    surname_before = textLastname.getText();
+                    textLastname.setText("");
+                    textName.setText("");
+                    info_modify.setVisible(true);
+                }
+                else{
+                    System.out.println("Zmieniam2");
+                    counter_modify=0;
+                    info_modify.setVisible(false);
+                    String lastname_p= textLastname.getText();
+                    textLastname.setText("");
+                    String name_p = textName.getText();
+                    textName.setText("");
+                    
+                    try{
+                    PreparedStatement preparedStatement = connection.prepareStatement("UPDATE " + "Studenci" + " SET nazwisko=?, imie=? WHERE nazwisko=? and imie=?");
+                    preparedStatement.setString(1, lastname_p);
+                    preparedStatement.setString(2, name_p);
+                    preparedStatement.setString(3, surname_before);
+                    preparedStatement.setString(4, name_before);
                     preparedStatement.execute();
 
                 }catch(SQLException e){
-                    System.err.println("Błąd przy wprowadzaniu danych studenta: " + lastname_p + " " + name_p);
+                    System.err.println("Error during data's transmission: " + lastname_p + " " + name_p);
                     e.printStackTrace();
                 }
-            });*/
-            c.gridx=1;
-            c.gridy=2;
-            add_studentsPanel.add(jb_modify,c);
-            
-        }
-        
-        this.add(add_studentsPanel, BorderLayout.CENTER);
-        this.validate(); //po nacisnieciu przycisku ukaza nam sie pola do wpisania
-        
-        
-    }
+            }
+            });          
+        }       
+   }
     
-    private class ListenerDB implements ActionListener{//dodajemy do BD
+    private class ListenerDB implements ActionListener{//add to BD
         int method;
         
         ListenerDB(int i){
-            System.out.println("czyszcze");
-            textName.setText(null);
-            textLastname.setText(null);
-            //textName.requestFocus();
-            //textLastname.requestFocus();
             method=i;
         }
         
         @Override
         public void actionPerformed(ActionEvent e) {
-            if(method==1) readStudents_method();
+            if(method==1){
+                if(textLastname.getText().isEmpty() && textName.getText().isEmpty()) message.append("Provide some value!\n");
+                else readStudents_method();
+                   
+            }
             else if(method==2){
+                System.out.println("2");
                 List<Student> wyjscie = new LinkedList<Student>();
                 wyjscie = pobierzDane("Studenci");
                 
                 for(Student s: wyjscie){
-                    message.append(s.getImie()+" "+s.getNazwisko()+", id:"+s.getId()+"\n");
-                    
+                    message.append(s.getImie()+" "+s.getNazwisko()+", id:"+s.getId()+"\n");              
                 }
+                System.out.println("czemu tu jestem");
+                if(wyjscie.isEmpty()) message.append("There is no such a user!!\n");
             }
         }
         
-    }
+    } 
     public List<Student> pobierzDane(String tabela) {
         
         String name= textName.getText();
@@ -255,9 +321,7 @@ public class Panel extends JPanel{
                 
         java.util.List<Student> wyjscie = new LinkedList<Student>();
         try{
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM "+tabela+" WHERE nazwisko=\'"
-                    + lastname+"\' AND imie=\'"+name+"\'");
-            
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM "+tabela+" WHERE nazwisko=\'"+ lastname+"\' AND imie=\'"+name+"\'");
 
             int id;
             String db_name, db_lastname;
@@ -270,7 +334,7 @@ public class Panel extends JPanel{
             }
             
         }catch(SQLException e){
-            System.err.println("Problem z wczytaniem danych z BD");
+            System.err.println("Problem with reading data from BD");
             e.printStackTrace();
             return null;
         }
@@ -287,7 +351,7 @@ public class Panel extends JPanel{
             preparedStatement.setString(2, name_p);
             preparedStatement.execute();
          } catch (SQLException exp) {
-            System.err.println("Błąd przy wprowadzaniu danych studenta: " + lastname_p + " " + name_p);
+            System.err.println("Error during data entry: " + lastname_p + " " + name_p);
             exp.printStackTrace();
          }
     }
@@ -297,7 +361,7 @@ public class Panel extends JPanel{
             Class.forName(DRIVER);
         } catch (ClassNotFoundException ex) {
             
-            System.err.println("Brak sterownika JDBC");
+            System.err.println("There is no such a driver as JDBC");
             ex.printStackTrace();
         }
         
@@ -307,7 +371,7 @@ public class Panel extends JPanel{
             createTable();
         
         } catch (SQLException ex) {
-            System.err.println("Problem z otwarciem połączenia");
+            System.err.println("Problem with connection opening");
             ex.printStackTrace();
         }
     }
@@ -317,7 +381,7 @@ public class Panel extends JPanel{
         try {
             statement.execute(tworz);
         } catch (SQLException e) {
-            System.err.println("Błąd przy tworzeniu tabeli");
+            System.err.println("Error during tables creating");
             e.printStackTrace();
         }
 
