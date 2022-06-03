@@ -263,7 +263,6 @@ public class Panel extends JPanel{
                 for(Student s: wyjscie){
                     message.append(s.getImie()+" "+s.getNazwisko()+", id:"+s.getId()+"\n");              
                 }
-                System.out.println("czemu tu jestem");
                 if(wyjscie.isEmpty()) message.append("There is no such a user!!\n");
             }
             else if(method==3){
@@ -282,35 +281,27 @@ public class Panel extends JPanel{
                         ee.printStackTrace();
                     }
                 }
-                else{
-                    System.out.println("no jak");
-                    
-                    message.append("Provide some value!\n");
+                else{            
+                   message.append("Provide some value!\n");
                 }
             }
             
             else if(method==4){
                 counter_modify++;
-                System.out.println("ok, zacznam");
                 if((counter_modify!=2)){
-                    System.out.println("Zmieniam1");
                     name_before = textName.getText();
                     surname_before = textLastname.getText();
                     textLastname.setText("");
                     textName.setText("");
                     info_modify.setVisible(true);
-                    System.out.println("pobrałem:"+ name_before + surname_before);
                 }
                 else{
-                    System.out.println("Zmieniam2");
                     counter_modify=0;
                     info_modify.setVisible(false);
                     String lastname_p= textLastname.getText();
                     textLastname.setText("");
                     String name_p = textName.getText();
-                    textName.setText("");
-                    
-                    System.out.println("a teraz :"+ lastname_p + name_p);
+                    textName.setText("");             
                     
                     try{
                     PreparedStatement preparedStatement = connection.prepareStatement("UPDATE " + "Studenci" + " SET nazwisko=?, imie=? WHERE nazwisko=? and imie=?");
