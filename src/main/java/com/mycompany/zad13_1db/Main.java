@@ -1,12 +1,8 @@
 package com.mycompany.zad13_1db;
 
-import java.awt.CardLayout;
 import java.awt.Dimension;
-import java.util.List;
-import java.util.Scanner;
-
 import javax.swing.JFrame;
-import javax.swing.JPanel;
+
 
     public class Main {
         

@@ -1,11 +1,9 @@
 package com.mycompany.zad13_1db;
 
-import java.awt.CardLayout;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.*;
@@ -174,7 +172,6 @@ public class Panel extends JPanel{
             e1.setVisible(true); e2.setVisible(true); 
             textName.setVisible(true);
             textLastname.setVisible(true);
-            textName.setVisible(true);
             info_modify.setVisible(false);
             
             textName.setText("");
@@ -279,7 +276,6 @@ public class Panel extends JPanel{
                         preparedStatement.setString(1, lastname_p);
                         preparedStatement.setString(2, name_p);
                         preparedStatement.execute();
-                        //preparedStatement.close();
 
                     }catch(SQLException ee){
                         System.err.println("Error during providing a user data: " + lastname_p + " " + name_p);

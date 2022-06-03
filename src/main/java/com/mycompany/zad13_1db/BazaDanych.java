@@ -17,7 +17,7 @@ public class BazaDanych {
             Class.forName(DRIVER);
         } catch (ClassNotFoundException ex) {
             
-            System.err.println("Brak sterownika JDBC");
+            System.err.println("there is no such a driver like JDBC");
             ex.printStackTrace();
         }
         
